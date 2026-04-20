@@ -1,0 +1,58 @@
+{
+  "settings": {
+    "parcela": 2820,
+    "saldoOriginal": 1177390,
+    "prazoOriginal": 419
+  },
+  "registros": [
+    {
+      "id": "2025-12",
+      "mes": "2025-12",
+      "saldo": 1177390,
+      "prazo": 419,
+      "simulacoes": [
+        { "id": "dez25-a", "valor": 6000,  "novoPrazo": 368, "executada": false },
+        { "id": "dez25-b", "valor": 7000,  "novoPrazo": 360, "executada": false },
+        { "id": "dez25-c", "valor": 8000,  "novoPrazo": 353, "executada": false },
+        { "id": "dez25-d", "valor": 10000, "novoPrazo": 340, "executada": false },
+        { "id": "dez25-e", "valor": 20000, "novoPrazo": 290, "executada": false },
+        { "id": "dez25-f", "valor": 50000, "novoPrazo": 206, "executada": false }
+      ]
+    },
+    {
+      "id": "2026-02",
+      "mes": "2026-02",
+      "saldo": 986310,
+      "prazo": 351,
+      "simulacoes": [
+        { "id": "fev26-a", "valor": 1000, "novoPrazo": 345, "executada": false },
+        { "id": "fev26-b", "valor": 1500, "novoPrazo": 342, "executada": false },
+        { "id": "fev26-c", "valor": 2000, "novoPrazo": 339, "executada": false },
+        { "id": "fev26-d", "valor": 3000, "novoPrazo": 333, "executada": false },
+        { "id": "fev26-e", "valor": 4000, "novoPrazo": 327, "executada": false },
+        { "id": "fev26-f", "valor": 5000, "novoPrazo": 322, "executada": true }
+      ]
+    },
+    {
+      "id": "2026-03",
+      "mes": "2026-03",
+      "saldo": 932920,
+      "prazo": 332,
+      "simulacoes": [
+        { "id": "mar26-a", "valor": 1000, "novoPrazo": 327, "executada": true }
+      ]
+    },
+    {
+      "id": "2026-04",
+      "mes": "2026-04",
+      "saldo": 916060,
+      "prazo": 326,
+      "simulacoes": [
+        { "id": "abr26-a", "valor": 2000, "novoPrazo": 321, "executada": false },
+        { "id": "abr26-b", "valor": 3500, "novoPrazo": 314, "executada": false },
+        { "id": "abr26-c", "valor": 4000, "novoPrazo": 311, "executada": false },
+        { "id": "abr26-d", "valor": 5000, "novoPrazo": 306, "executada": false }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amortiza · Controle de Financiamento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">◆</span>
+    <div>
+      <h1>Amortiza</h1>
+      <p class="brand-sub">Controle de financiamento · Tabela Price</p>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn-ghost" id="btn-export">↓ Exportar JSON</button>
+    <button class="btn-ghost" id="btn-import">↑ Importar JSON</button>
+    <input type="file" id="file-import" accept="application/json" hidden>
+    <button class="btn-ghost" id="btn-settings">⚙ Configurar</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- KPIs -->
+  <section class="kpis">
+    <div class="kpi">
+      <span class="kpi-label">Dívida atual</span>
+      <span class="kpi-value" id="kpi-saldo">—</span>
+      <span class="kpi-foot" id="kpi-saldo-foot"></span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-label">Prazo restante</span>
+      <span class="kpi-value" id="kpi-prazo">—</span>
+      <span class="kpi-foot" id="kpi-prazo-foot"></span>
+    </div>
+    <div class="kpi kpi-highlight">
+      <span class="kpi-label">Economia total acumulada</span>
+      <span class="kpi-value" id="kpi-economia">—</span>
+      <span class="kpi-foot" id="kpi-economia-foot">bruta · líquida abaixo</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-label">Total amortizado</span>
+      <span class="kpi-value" id="kpi-amortizado">—</span>
+      <span class="kpi-foot" id="kpi-amortizado-foot"></span>
+    </div>
+  </section>
+
+  <!-- Gráfico -->
+  <section class="card">
+    <div class="card-head">
+      <div>
+        <h2>Evolução da dívida</h2>
+        <p class="muted">Comparativo entre trajetória real e projeção sem amortizações</p>
+      </div>
+      <div class="legend">
+        <span><i class="dot dot-a"></i> Trajetória real</span>
+        <span><i class="dot dot-b"></i> Sem amortizações</span>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="chart-saldo"></canvas>
+    </div>
+  </section>
+
+  <!-- Registros mensais + simulações -->
+  <section class="grid-2">
+    <div class="card">
+      <div class="card-head">
+        <h2>Novo registro mensal</h2>
+      </div>
+      <form id="form-registro" class="form">
+        <div class="field">
+          <label>Mês de referência</label>
+          <input type="month" id="reg-mes" required>
+        </div>
+        <div class="field">
+          <label>Saldo devedor (R$)</label>
+          <input type="number" id="reg-saldo" step="0.01" min="0" required placeholder="916060,00">
+        </div>
+        <div class="field">
+          <label>Prazo restante (meses)</label>
+          <input type="number" id="reg-prazo" min="1" required placeholder="326">
+        </div>
+        <div class="field-row">
+          <button type="submit" class="btn-primary">Salvar registro</button>
+          <button type="button" class="btn-ghost" id="btn-cancel-reg" hidden>Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Simulações do mês</h2>
+        <select id="select-mes-sim" class="select-inline"></select>
+      </div>
+      <form id="form-sim" class="form">
+        <div class="field-inline">
+          <div class="field">
+            <label>Valor a amortizar (R$)</label>
+            <input type="number" id="sim-valor" step="0.01" min="0" required placeholder="10000">
+          </div>
+          <div class="field">
+            <label>Novo prazo (meses)</label>
+            <input type="number" id="sim-prazo" min="1" required placeholder="290">
+            <small class="hint">pegue do simulador da Caixa</small>
+          </div>
+        </div>
+        <label class="check">
+          <input type="checkbox" id="sim-executada">
+          <span>Marcar como efetivamente executada neste mês</span>
+        </label>
+        <button type="submit" class="btn-primary">Adicionar simulação</button>
+      </form>
+
+      <div class="sim-list" id="sim-list">
+        <p class="empty">Nenhum registro mensal selecionado.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Histórico -->
+  <section class="card">
+    <div class="card-head">
+      <h2>Histórico de meses</h2>
+      <p class="muted">Registros mensais e amortizações executadas</p>
+    </div>
+    <div class="table-wrap">
+      <table id="table-historico">
+        <thead>
+          <tr>
+            <th>Mês</th>
+            <th class="num">Saldo</th>
+            <th class="num">Prazo</th>
+            <th class="num">Em anos</th>
+            <th class="num">Amortizado</th>
+            <th class="num">Meses ganhos</th>
+            <th class="num">Economia bruta</th>
+            <th class="num">Economia líquida</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- Modal configurações -->
+<div class="modal" id="modal-settings" hidden>
+  <div class="modal-card">
+    <h3>Configurações</h3>
+    <div class="field">
+      <label>Valor da parcela mensal (R$)</label>
+      <input type="number" id="cfg-parcela" step="0.01" min="0">
+      <small class="hint">usado para calcular a economia em cada simulação</small>
+    </div>
+    <div class="field">
+      <label>Saldo devedor original (R$)</label>
+      <input type="number" id="cfg-saldo-original" step="0.01" min="0">
+      <small class="hint">no início do financiamento — opcional</small>
+    </div>
+    <div class="field">
+      <label>Prazo original (meses)</label>
+      <input type="number" id="cfg-prazo-original" min="1">
+      <small class="hint">prazo total contratado — opcional</small>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="btn-cfg-cancel">Cancelar</button>
+      <button class="btn-primary" id="btn-cfg-save">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <span>Amortiza · dados salvos localmente no navegador · versione exportando o JSON</span>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
